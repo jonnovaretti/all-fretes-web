@@ -10,7 +10,7 @@ import { CheckoutProvider } from '@/modules/checkout/context/checkout-context';
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'Elecshop',
+  title: 'all-fretes',
   description: 'Modern eCommerce platform',
 };
 

@@ -31,7 +31,7 @@ export function Header() {
               )}
             </Button>
             <Link href="/" className="font-bold text-xl md:text-lg">
-              ELECSHOP
+              all-fretes
             </Link>
           </div>
 
