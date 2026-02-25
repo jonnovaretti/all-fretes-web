@@ -24,12 +24,17 @@ export function UserMenu() {
 
   if (!user) {
     return (
-      <Link href="/login">
-        <Button variant="ghost" size="sm">
-          <User className="h-4 w-4 mr-2" />
-          Sign In
-        </Button>
-      </Link>
+      <div className="flex items-center gap-2">
+        <Link href="/login">
+          <Button variant="ghost" size="sm">
+            <User className="h-4 w-4 mr-2" />
+            Sign In
+          </Button>
+        </Link>
+        <Link href="/register">
+          <Button size="sm">Create account</Button>
+        </Link>
+      </div>
     );
   }
 
@@ -47,21 +52,12 @@ export function UserMenu() {
         <DropdownMenuItem asChild>
           <Link href="/profile">Profile</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/profile/orders">Orders</Link>
-        </DropdownMenuItem>
         {user.isAdmin && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Admin Dashboard</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link href="/admin/products">Products</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
               <Link href="/admin/users">Users</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/admin/orders">Orders</Link>
             </DropdownMenuItem>
           </>
         )}

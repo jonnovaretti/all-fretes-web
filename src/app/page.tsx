@@ -1,73 +1,41 @@
+import Link from 'next/link';
 import { Container } from '@/components/ui/container';
-import { ProductGrid } from '@/modules/products/components/product-grid';
-import { getProducts } from '@/modules/products/actions/get-products';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationEllipsis,
-} from '@/components/ui/pagination';
-import { getVisiblePages } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
-interface HomePageProps {
-  searchParams: Promise<{ page?: string }>;
-}
-
-export default async function Home({ searchParams }: HomePageProps) {
-  const { page } = await searchParams;
-  const currentPage = Number(page) || 1;
-  const { items: products, pages } = await getProducts(currentPage, 10);
-
-  const visiblePages = getVisiblePages(currentPage, pages);
-
+export default function Home() {
   return (
-    <Container className="mt-10">
-      <div className="space-y-10 pb-10">
-        <div className="flex flex-col gap-y-8 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold">Latest Products</h1>
-          <ProductGrid products={products} />
-          <div className="flex justify-center mt-8">
-            {pages > 1 && (
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href={`/?page=${currentPage - 1}`}
-                      isActive={currentPage > 1}
-                    />
-                  </PaginationItem>
-
-                  {visiblePages.map((pageNum, idx) =>
-                    pageNum === null ? (
-                      <PaginationItem key={`ellipsis-${idx}`}>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    ) : (
-                      <PaginationItem key={pageNum}>
-                        <PaginationLink
-                          href={`/?page=${pageNum}`}
-                          isActive={currentPage === pageNum}
-                        >
-                          {pageNum}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ),
-                  )}
-
-                  <PaginationItem>
-                    <PaginationNext
-                      href={`/?page=${currentPage + 1}`}
-                      isActive={currentPage < pages}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            )}
+    <Container className="mt-12 pb-12">
+      <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:items-center">
+        <div className="space-y-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Accounts first
+          </p>
+          <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
+            Manage users, profiles, and access with clarity.
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            A clean foundation for authentication, profile management, and
+            admin user oversight. Keep your account flows focused and fast.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Button asChild size="lg">
+              <Link href="/register">Create account</Link>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link href="/login">Sign in</Link>
+            </Button>
           </div>
         </div>
+
+        <Card className="p-6 space-y-4">
+          <h2 className="text-xl font-semibold">What is ready</h2>
+          <ul className="space-y-3 text-sm text-muted-foreground">
+            <li>Sign in and registration flows</li>
+            <li>Profile updates with password changes</li>
+            <li>Admin user list with role badges</li>
+          </ul>
+        </Card>
       </div>
     </Container>
   );
