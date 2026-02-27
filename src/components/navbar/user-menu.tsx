@@ -52,7 +52,7 @@ export function UserMenu() {
         <DropdownMenuItem asChild>
           <Link href="/profile">Profile</Link>
         </DropdownMenuItem>
-        {user.isAdmin && (
+        {user.admin && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Admin Dashboard</DropdownMenuLabel>

@@ -25,7 +25,7 @@ export default function AdminLayout({
     );
   }
 
-  if (!user?.isAdmin || error) {
+  if (!user?.admin || error) {
     redirect('/login');
   }
 

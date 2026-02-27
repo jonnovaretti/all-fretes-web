@@ -1,33 +1,27 @@
 import { apiClient } from '@/lib/api-client';
-import type { User } from '@apps/shared/types';
-
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-interface AuthResponse {
-  user: User;
-  accessToken: string;
-  refreshToken: string;
-}
+import type {
+  AuthResponseDto,
+  CreateUserDto,
+  LoginDto,
+  UserResponseDto,
+} from '@/types/api';
 
 export const authApi = {
-  login: async (credentials: LoginCredentials) => {
-    const response = await apiClient.post<AuthResponse>(
+  login: async (credentials: LoginDto) => {
+    const response = await apiClient.post<AuthResponseDto>(
       '/auth/login',
       credentials,
     );
     return response.data;
   },
 
-  register: async (data: LoginCredentials & { name: string }) => {
-    const response = await apiClient.post<AuthResponse>('/auth/register', data);
+  register: async (data: CreateUserDto) => {
+    const response = await apiClient.post<AuthResponseDto>('/auth/register', data);
     return response.data;
   },
 
   getProfile: async () => {
-    const response = await apiClient.get<User>('/auth/profile');
+    const response = await apiClient.get<UserResponseDto>('/auth/profile');
     return response.data;
   },
 
