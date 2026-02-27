@@ -177,6 +177,12 @@ export interface components {
             deliveryEstimate: string;
             /** @example Correios */
             carrier?: Record<string, never>;
+            /** @example Objeto em transporte */
+            carrierStatus?: Record<string, never>;
+            /** @example Saiu para entrega ao destinatario */
+            statusDescription?: Record<string, never>;
+            /** @example 2024-06-14T09:22:00.000Z */
+            lastNotifiedAt?: Record<string, never>;
             /** @example 2024-06-15T00:00:00.000Z */
             deliveryEstimateDate?: Record<string, never>;
             /**
@@ -289,7 +295,14 @@ export interface operations {
     };
     ShipmentsController_findByAccountId: {
         parameters: {
-            query?: never;
+            query?: {
+                page?: number;
+                totalItems?: number;
+                orderBy?: "ASC" | "DESC";
+                externalId?: string;
+                status?: string;
+                carrierStatus?: string;
+            };
             header?: never;
             path: {
                 id: string;
