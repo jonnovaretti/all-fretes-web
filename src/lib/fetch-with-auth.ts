@@ -10,15 +10,18 @@ export async function fetchWithAuth(
   url: string,
   config: FetchWithAuthConfig = {},
 ) {
-  const { revalidatePaths, headers, ...rest } = config;
+  const { headers, ...rest } = config;
+  delete (rest as FetchWithAuthConfig).revalidatePaths;
   const accessToken = await getAccessToken();
+  const requestHeaders = new Headers(headers);
+
+  if (accessToken) {
+    requestHeaders.set('Authorization', `Bearer ${accessToken}`);
+  }
 
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
     ...rest,
-    headers: {
-      ...headers,
-      Cookie: `access_token=${accessToken}`,
-    },
+    headers: requestHeaders,
   });
 
   if (!response.ok) {

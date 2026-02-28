@@ -2,6 +2,32 @@ import { refreshToken } from '@/modules/auth/api/refresh-token';
 import { apiClient } from './api-client';
 import { queryClient } from '@/app/providers';
 
+const clearAuthCookies = () => {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
+  document.cookie = 'access_token=; path=/; max-age=0; samesite=lax';
+  document.cookie = 'refresh_token=; path=/; max-age=0; samesite=lax';
+};
+
+const redirectToLogin = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (window.location.pathname !== '/login') {
+    window.location.assign('/login');
+  }
+};
+
+const invalidateSession = () => {
+  clearAuthCookies();
+  queryClient.setQueryData(['user'], null);
+  queryClient.cancelQueries({ queryKey: ['user'] });
+  redirectToLogin();
+};
+
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (token: string) => void;
@@ -29,6 +55,12 @@ apiClient.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
+    const status = error.response?.status;
+
+    if (status === 401 || status === 403) {
+      invalidateSession();
+      return Promise.reject(error);
+    }
 
     // // Skip refresh for auth endpoints
     // const isAuthEndpoint = originalRequest.url?.includes('/auth/');
@@ -37,7 +69,7 @@ apiClient.interceptors.response.use(
     // }
 
     // If we're already retrying or it's not a 401, reject immediately
-    if (originalRequest._retry || error.response?.status !== 401) {
+    if (originalRequest._retry || status !== 401) {
       return Promise.reject(error);
     }
 
@@ -45,8 +77,7 @@ apiClient.interceptors.response.use(
     if (isRefreshing) {
       console.warn('Refresh got stuck, resetting state');
       resetRefreshState();
-      queryClient.setQueryData(['user'], null);
-      queryClient.cancelQueries({ queryKey: ['user'] });
+      invalidateSession();
       return Promise.reject(error);
     }
 
@@ -59,6 +90,7 @@ apiClient.interceptors.response.use(
       return apiClient(originalRequest);
     } catch (error) {
       processQueue(error, null);
+      invalidateSession();
       throw error;
     } finally {
       resetRefreshState();

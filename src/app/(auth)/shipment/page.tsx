@@ -195,7 +195,7 @@ export default function ShipmentPage() {
             />
           </div>
           <div className="min-w-60 flex-1 space-y-2">
-            <p className="text-sm font-medium">Invoice Code</p>
+            <p className="text-sm font-medium">NFe</p>
             <Input
               placeholder="Type at least 4 characters"
               value={invoiceCodeFilter}

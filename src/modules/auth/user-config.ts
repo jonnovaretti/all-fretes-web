@@ -9,9 +9,10 @@ export const userQueryConfig = {
       return failureCount < 1;
     }
     // Don't retry on other auth errors
-    if (error?.response?.status === 403) {
+    if (error?.response?.status === 403 || error?.response?.status === 404) {
       return false;
     }
+
     // Retry other errors up to 3 times
     return failureCount < 3;
   },

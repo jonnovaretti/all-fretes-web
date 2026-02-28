@@ -33,7 +33,7 @@ const HIDDEN_COLUMNS = new Set([
 const COLUMN_LABELS: Record<string, string> = {
   externalId: '#Pedido',
   status: 'Status',
-  invoiceCode: 'Nota Fiscal',
+  invoiceCode: 'NFe',
   destination: 'Destino',
   value: 'Valor',
   startedAt: 'Iniciado em',
@@ -136,7 +136,9 @@ export function ShipmentsGrid({ shipments }: ShipmentsGridProps) {
         <TableHeader>
           <TableRow>
             {columns.map(column => (
-              <TableHead key={column}>{COLUMN_LABELS[column] ?? column}</TableHead>
+              <TableHead key={column}>
+                {COLUMN_LABELS[column] ?? column}
+              </TableHead>
             ))}
           </TableRow>
         </TableHeader>
