@@ -66,7 +66,7 @@ export default function ShipmentPage() {
     [debouncedExternalId],
   );
 
-  const shouldApplyTextFilter = (value: string) => value.length > 3;
+  const shouldApplyTextFilter = (value: string) => value.length > 0;
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -183,35 +183,35 @@ export default function ShipmentPage() {
 
   return (
     <Container className="py-5">
-      <Card className="p-2">
-        <h1 className="text-center text-2xl font-bold">Pedidos e fretes</h1>
-        <div className="mt-6 flex items-end gap-4 overflow-x-auto">
-          <div className="min-w-60 flex-1 space-y-2">
-            <p className="text-sm font-medium">#Pedido</p>
-            <Input
-              placeholder="Type at least 4 characters"
-              value={externalIdFilter}
-              onChange={event => setExternalIdFilter(event.target.value)}
-            />
-          </div>
-          <div className="min-w-60 flex-1 space-y-2">
-            <p className="text-sm font-medium">NFe</p>
-            <Input
-              placeholder="Type at least 4 characters"
-              value={invoiceCodeFilter}
-              onChange={event => setInvoiceCodeFilter(event.target.value)}
-            />
-          </div>
-          <div className="min-w-60 flex-1 space-y-2">
-            <p className="text-sm font-medium">Status</p>
-            <Input
-              placeholder="Filter by status"
-              value={statusFilter}
-              onChange={event => setStatusFilter(event.target.value)}
-            />
-          </div>
+      <h1 className="text-center text-2xl font-bold">Pedidos e fretes</h1>
+      <div className="mt-6 flex items-end gap-4 overflow-x-auto">
+        <div className="min-w-60 flex-1 space-y-2">
+          <p className="text-sm font-medium">#Pedido</p>
+          <Input
+            placeholder="Type to filter"
+            value={externalIdFilter}
+            onChange={event => setExternalIdFilter(event.target.value)}
+          />
         </div>
+        <div className="min-w-60 flex-1 space-y-2">
+          <p className="text-sm font-medium">NFe</p>
+          <Input
+            placeholder="Type to filter"
+            value={invoiceCodeFilter}
+            onChange={event => setInvoiceCodeFilter(event.target.value)}
+          />
+        </div>
+        <div className="min-w-60 flex-1 space-y-2">
+          <p className="text-sm font-medium">Status</p>
+          <Input
+            placeholder="Filter by status"
+            value={statusFilter}
+            onChange={event => setStatusFilter(event.target.value)}
+          />
+        </div>
+      </div>
 
+      <Card className="mt-2">
         {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 
         <ShipmentsGrid shipments={shipments} />

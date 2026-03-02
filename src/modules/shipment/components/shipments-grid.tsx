@@ -110,6 +110,35 @@ const formatColumnValue = (column: string, value: unknown) => {
   return formatCellValue(value);
 };
 
+const getRowStatusClassName = (status: unknown) => {
+  if (typeof status !== 'string') {
+    return 'hover:bg-muted/50';
+  }
+
+  const normalizedStatus = status
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, '');
+
+  if (normalizedStatus === 'finished') {
+    return 'bg-green-100 text-slate-900 hover:bg-green-200';
+  }
+
+  if (normalizedStatus === 'delayed') {
+    return 'bg-yellow-100 text-slate-900 hover:bg-yellow-200';
+  }
+
+  if (normalizedStatus === 'returning') {
+    return 'bg-red-100 text-slate-900 hover:bg-red-200';
+  }
+
+  if (normalizedStatus === 'intransit') {
+    return 'hover:bg-muted/50';
+  }
+
+  return 'hover:bg-muted/50';
+};
+
 export function ShipmentsGrid({ shipments }: ShipmentsGridProps) {
   if (!shipments.length) {
     return (
@@ -131,7 +160,7 @@ export function ShipmentsGrid({ shipments }: ShipmentsGridProps) {
   const columns = COLUMN_ORDER.filter(column => availableColumns.has(column));
 
   return (
-    <div className="mt-6 overflow-x-auto">
+    <div className="mt-2 overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
@@ -145,7 +174,7 @@ export function ShipmentsGrid({ shipments }: ShipmentsGridProps) {
         <TableBody>
           {shipments.map((shipment, index) => (
             <TableRow
-              className="hover:bg-muted/50"
+              className={getRowStatusClassName(shipment.consolidatedStatus)}
               key={String(shipment.id ?? shipment._id ?? index)}
             >
               {columns.map(column => (

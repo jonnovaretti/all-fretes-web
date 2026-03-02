@@ -123,6 +123,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/accounts/{id}/sync/consolidated-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Enqueue consolidated status sync for an account */
+        post: operations["SyncController_syncConsolidatedStatus"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -185,6 +202,8 @@ export interface components {
             lastNotifiedAt?: Record<string, never>;
             /** @example 2024-06-15T00:00:00.000Z */
             deliveryEstimateDate?: Record<string, never>;
+            /** @example delayed */
+            consolidatedStatus?: Record<string, never>;
             /**
              * Format: date-time
              * @example 2024-06-01T12:34:56.000Z
@@ -300,6 +319,7 @@ export interface operations {
                 totalItems?: number;
                 orderBy?: "ASC" | "DESC";
                 externalId?: string;
+                invoiceCode?: string;
                 status?: string;
                 carrierStatus?: string;
             };
@@ -408,6 +428,27 @@ export interface operations {
         };
     };
     SyncController_syncTracking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SyncJobResponseDto"];
+                };
+            };
+        };
+    };
+    SyncController_syncConsolidatedStatus: {
         parameters: {
             query?: never;
             header?: never;
