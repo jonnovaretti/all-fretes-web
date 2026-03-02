@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -13,6 +14,10 @@ type Shipment = Record<string, unknown>;
 
 interface ShipmentsGridProps {
   shipments: Shipment[];
+  currentPage: number;
+  hasNextPage: boolean;
+  onPageChange: (page: number) => void;
+  isLoading?: boolean;
 }
 
 const formatCellValue = (value: unknown) => {
@@ -121,15 +126,15 @@ const getRowStatusClassName = (status: unknown) => {
     .replace(/[\s_-]+/g, '');
 
   if (normalizedStatus === 'finished') {
-    return 'bg-green-100 text-slate-900 hover:bg-green-200';
+    return 'bg-green-200 text-slate-900 hover:bg-green-300';
   }
 
   if (normalizedStatus === 'delayed') {
-    return 'bg-yellow-100 text-slate-900 hover:bg-yellow-200';
+    return 'bg-yellow-200 text-slate-900 hover:bg-yellow-300';
   }
 
   if (normalizedStatus === 'returning') {
-    return 'bg-orange-100 text-slate-900 hover:bg-orange-200';
+    return 'bg-orange-200 text-slate-900 hover:bg-orange-300';
   }
 
   if (normalizedStatus === 'intransit') {
@@ -139,15 +144,13 @@ const getRowStatusClassName = (status: unknown) => {
   return 'hover:bg-muted/50';
 };
 
-export function ShipmentsGrid({ shipments }: ShipmentsGridProps) {
-  if (!shipments.length) {
-    return (
-      <p className="mt-6 text-sm text-muted-foreground">
-        No shipments found for this account.
-      </p>
-    );
-  }
-
+export function ShipmentsGrid({
+  shipments,
+  currentPage,
+  hasNextPage,
+  onPageChange,
+  isLoading = false,
+}: ShipmentsGridProps) {
   const availableColumns = new Set(
     Array.from(
       shipments.reduce((keys, shipment) => {
@@ -159,33 +162,67 @@ export function ShipmentsGrid({ shipments }: ShipmentsGridProps) {
 
   const columns = COLUMN_ORDER.filter(column => availableColumns.has(column));
 
+  if (!shipments.length) {
+    return (
+      <p className="mt-6 text-sm text-muted-foreground">
+        No shipments found for this account.
+      </p>
+    );
+  }
+
   return (
-    <div className="mt-2 overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {columns.map(column => (
-              <TableHead key={column}>
-                {COLUMN_LABELS[column] ?? column}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {shipments.map((shipment, index) => (
-            <TableRow
-              className={getRowStatusClassName(shipment.consolidatedStatus)}
-              key={String(shipment.id ?? shipment._id ?? index)}
-            >
+    <div className="mt-2 space-y-4">
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
               {columns.map(column => (
-                <TableCell key={`${column}-${index}`}>
-                  {formatColumnValue(column, shipment[column])}
-                </TableCell>
+                <TableHead key={column}>
+                  {COLUMN_LABELS[column] ?? column}
+                </TableHead>
               ))}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {shipments.map((shipment, index) => (
+              <TableRow
+                className={getRowStatusClassName(shipment.consolidatedStatus)}
+                key={String(shipment.id ?? shipment._id ?? index)}
+              >
+                {columns.map(column => (
+                  <TableCell key={`${column}-${index}`}>
+                    {formatColumnValue(column, shipment[column])}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+
+        <span className="px-3 text-sm text-muted-foreground">
+          Page {currentPage}
+        </span>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={!hasNextPage || isLoading}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 }

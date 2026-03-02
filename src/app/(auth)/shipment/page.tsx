@@ -10,6 +10,7 @@ import { apiClient } from '@/lib/api-client';
 import { ShipmentsGrid } from '@/modules/shipment/components/shipments-grid';
 
 const ACCOUNT_ID = 'f0e773e8-2918-41ff-a1ad-16afe52a4a6b';
+const PAGE_SIZE = 10;
 type ShipmentResponse =
   | Record<string, unknown>
   | Record<string, unknown>[]
@@ -41,9 +42,13 @@ export default function ShipmentPage() {
   const initialStatus = searchParams.get('status') ?? '';
   const initialInvoiceCode = searchParams.get('invoiceCode') ?? '';
   const initialExternalId = searchParams.get('externalId') ?? '';
+  const initialPage = Math.max(Number(searchParams.get('page')) || 1, 1);
 
   const [shipments, setShipments] = useState<Record<string, unknown>[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [invoiceCodeFilter, setInvoiceCodeFilter] =
     useState(initialInvoiceCode);
@@ -105,6 +110,12 @@ export default function ShipmentPage() {
       params.delete('externalId');
     }
 
+    if (currentPage > 1) {
+      params.set('page', String(currentPage));
+    } else {
+      params.delete('page');
+    }
+
     const next = params.toString();
     const current = searchParams.toString();
 
@@ -120,6 +131,7 @@ export default function ShipmentPage() {
     pathname,
     router,
     searchParams,
+    currentPage,
   ]);
 
   useEffect(() => {
@@ -137,6 +149,7 @@ export default function ShipmentPage() {
 
     const fetchShipments = async () => {
       try {
+        setIsLoading(true);
         const params = new URLSearchParams();
 
         if (activeStatus) {
@@ -148,6 +161,8 @@ export default function ShipmentPage() {
         if (activeExternalId) {
           params.set('externalId', activeExternalId);
         }
+        params.set('page', String(currentPage));
+        params.set('totalItems', String(PAGE_SIZE));
 
         const queryString = params.toString();
         const endpoint = queryString
@@ -157,7 +172,15 @@ export default function ShipmentPage() {
 
         if (!isMounted) return;
 
-        setShipments(normalizeShipments(response.data as ShipmentResponse));
+        const normalized = normalizeShipments(response.data as ShipmentResponse);
+        if (!normalized.length && currentPage > 1) {
+          setHasNextPage(false);
+          setCurrentPage(page => Math.max(1, page - 1));
+          return;
+        }
+
+        setShipments(normalized);
+        setHasNextPage(normalized.length === PAGE_SIZE);
         setError(null);
       } catch (err) {
         if (!isMounted) return;
@@ -165,8 +188,11 @@ export default function ShipmentPage() {
         setError(
           axiosError.response?.data?.message || 'Failed to load shipments.',
         );
+        setHasNextPage(false);
+        setShipments([]);
       } finally {
         if (!isMounted) return;
+        setIsLoading(false);
       }
     };
 
@@ -179,6 +205,7 @@ export default function ShipmentPage() {
     normalizedExternalIdFilter,
     normalizedInvoiceCodeFilter,
     normalizedStatusFilter,
+    currentPage,
   ]);
 
   return (
@@ -190,7 +217,10 @@ export default function ShipmentPage() {
           <Input
             placeholder="Type to filter"
             value={externalIdFilter}
-            onChange={event => setExternalIdFilter(event.target.value)}
+            onChange={event => {
+              setExternalIdFilter(event.target.value);
+              setCurrentPage(1);
+            }}
           />
         </div>
         <div className="min-w-60 flex-1 space-y-2">
@@ -198,7 +228,10 @@ export default function ShipmentPage() {
           <Input
             placeholder="Type to filter"
             value={invoiceCodeFilter}
-            onChange={event => setInvoiceCodeFilter(event.target.value)}
+            onChange={event => {
+              setInvoiceCodeFilter(event.target.value);
+              setCurrentPage(1);
+            }}
           />
         </div>
         <div className="min-w-60 flex-1 space-y-2">
@@ -206,7 +239,10 @@ export default function ShipmentPage() {
           <Input
             placeholder="Filter by status"
             value={statusFilter}
-            onChange={event => setStatusFilter(event.target.value)}
+            onChange={event => {
+              setStatusFilter(event.target.value);
+              setCurrentPage(1);
+            }}
           />
         </div>
       </div>
@@ -214,7 +250,13 @@ export default function ShipmentPage() {
       <Card className="mt-2">
         {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 
-        <ShipmentsGrid shipments={shipments} />
+        <ShipmentsGrid
+          shipments={shipments}
+          currentPage={currentPage}
+          hasNextPage={hasNextPage}
+          onPageChange={setCurrentPage}
+          isLoading={isLoading}
+        />
       </Card>
     </Container>
   );
