@@ -129,7 +129,7 @@ const getRowStatusClassName = (status: unknown) => {
   }
 
   if (normalizedStatus === 'returning') {
-    return 'bg-red-100 text-slate-900 hover:bg-red-200';
+    return 'bg-orange-100 text-slate-900 hover:bg-orange-200';
   }
 
   if (normalizedStatus === 'intransit') {
