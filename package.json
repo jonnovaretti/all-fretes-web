@@ -9,7 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "gen:api-types": "mkdir -p src/types && openapi-typescript \"${OPENAPI_SCHEMA_URL:-http://localhost:3000/docs-json}\" -o src/types/api.generated.ts"
+    "gen:api-types": "mkdir -p src/types && dotenv -- cross-var openapi-typescript \"${OPENAPI_SCHEMA_URL:-%NEXT_PUBLIC_API_URL%/docs-json}\" -o src/types/api.generated.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.8",
@@ -31,6 +31,8 @@
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cross-var": "^1.1.0",
+    "dotenv-cli": "^11.0.0",
     "framer-motion": "^11.14.4",
     "lucide-react": "^0.468.0",
     "next": "^15.5.12",
