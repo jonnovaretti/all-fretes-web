@@ -1,7 +1,7 @@
 'use server';
 
 import { fetchWithAuth } from '@/lib/fetch-with-auth';
-import type { PaginatedResponse, User } from '@apps/shared/types';
+import type { PaginatedResponse, User } from '@/modules/admin/types';
 
 export async function getUsers(
   page: number = 1,

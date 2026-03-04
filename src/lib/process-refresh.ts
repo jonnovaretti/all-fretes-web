@@ -1,6 +1,7 @@
 import { refreshToken } from '@/modules/auth/api/refresh-token';
 import { apiClient } from './api-client';
 import { queryClient } from '@/app/providers';
+import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 const clearAuthCookies = () => {
   if (typeof document === 'undefined') {
@@ -29,12 +30,16 @@ const invalidateSession = () => {
 };
 
 let isRefreshing = false;
-let failedQueue: Array<{
+type RefreshQueueItem = {
   resolve: (token: string) => void;
-  reject: (error: any) => void;
-}> = [];
+  reject: (error: unknown) => void;
+};
 
-const processQueue = (error: any, token: string | null = null) => {
+type RetryableRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean };
+
+let failedQueue: RefreshQueueItem[] = [];
+
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach(prom => {
     if (error) {
       prom.reject(error);
@@ -53,9 +58,13 @@ const resetRefreshState = () => {
 
 apiClient.interceptors.response.use(
   response => response,
-  async error => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as RetryableRequestConfig | undefined;
     const status = error.response?.status;
+
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
 
     if (status === 401 || status === 403) {
       invalidateSession();
@@ -88,10 +97,10 @@ apiClient.interceptors.response.use(
       await refreshToken();
       processQueue(null, 'refreshed');
       return apiClient(originalRequest);
-    } catch (error) {
-      processQueue(error, null);
+    } catch (refreshError: unknown) {
+      processQueue(refreshError, null);
       invalidateSession();
-      throw error;
+      throw refreshError;
     } finally {
       resetRefreshState();
     }

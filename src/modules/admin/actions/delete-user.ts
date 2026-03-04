@@ -19,7 +19,7 @@ export async function deleteUser(userId: string) {
       success: true,
       message: 'User deleted successfully',
     };
-  } catch (error) {
+  } catch {
     return {
       success: false,
       message: 'Failed to delete user',

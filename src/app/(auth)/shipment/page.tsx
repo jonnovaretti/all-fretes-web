@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { AxiosError } from 'axios';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Container } from '@/components/ui/container';
@@ -16,6 +16,9 @@ type ShipmentResponse =
   | Record<string, unknown>[]
   | { data?: Record<string, unknown> | Record<string, unknown>[] };
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
 const normalizeShipments = (
   payload: ShipmentResponse | null,
 ): Record<string, unknown>[] => {
@@ -28,13 +31,16 @@ const normalizeShipments = (
   if ('data' in payload) {
     const data = payload.data;
     if (!data) return [];
-    return Array.isArray(data) ? data : [data];
+    if (Array.isArray(data)) {
+      return data.filter(isRecord);
+    }
+    return isRecord(data) ? [data] : [];
   }
 
   return [payload];
 };
 
-export default function ShipmentPage() {
+function ShipmentPageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -259,5 +265,19 @@ export default function ShipmentPage() {
         />
       </Card>
     </Container>
+  );
+}
+
+export default function ShipmentPage() {
+  return (
+    <Suspense
+      fallback={
+        <Container className="py-5">
+          <h1 className="text-center text-2xl font-bold">Pedidos e fretes</h1>
+        </Container>
+      }
+    >
+      <ShipmentPageContent />
+    </Suspense>
   );
 }
