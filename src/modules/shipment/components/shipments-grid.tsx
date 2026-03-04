@@ -42,7 +42,7 @@ const COLUMN_LABELS: Record<string, string> = {
   destination: 'Destino',
   value: 'Valor',
   startedAt: 'Iniciado em',
-  deliveryEstimate: 'Prazo de Entrega',
+  totalDaysEstimated: 'Prazo de Entrega',
   carrier: 'Transportadora',
   carrierStatus: 'Transportadora status',
   statusDescription: 'Detalhes status',
@@ -100,16 +100,16 @@ const formatCurrencyBRL = (value: unknown) => {
 };
 
 const formatColumnValue = (column: string, value: unknown) => {
-  if (
-    column === 'startedAt' ||
-    column === 'deliveryEstimateDate' ||
-    column === 'lastNotifiedAt'
-  ) {
+  if (column === 'startedAt' || column === 'lastNotifiedAt') {
     return formatDateTime(value);
   }
 
   if (column === 'value') {
     return formatCurrencyBRL(value);
+  }
+
+  if (column === 'totalDaysEstimated') {
+    return `${value} dias uteis`;
   }
 
   return formatCellValue(value);

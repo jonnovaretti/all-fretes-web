@@ -190,8 +190,8 @@ export interface components {
             value: number;
             /** @example 2024-06-01T12:34:56.000Z */
             startedAt?: Record<string, never>;
-            /** @example 15/06/2024 */
-            deliveryEstimate: string;
+            /** @example 5 */
+            totalDaysEstimated: number;
             /** @example Correios */
             carrier?: Record<string, never>;
             /** @example Objeto em transporte */
@@ -450,7 +450,9 @@ export interface operations {
     };
     SyncController_syncConsolidatedStatus: {
         parameters: {
-            query?: never;
+            query: {
+                forceAllAccounts: boolean;
+            };
             header?: never;
             path: {
                 id: string;
