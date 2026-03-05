@@ -11,6 +11,7 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { apiClient } from '@/lib/api-client';
+import Link from 'next/link';
 import type { AccountResponseDto } from '@/types/api';
 
 function AccountsPageContent() {
@@ -86,6 +87,12 @@ function AccountsPageContent() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">{account.id}</p>
+              <Link
+                href={`/accounts/${account.id}/shipments`}
+                className="mt-3 inline-block text-sm font-medium text-primary hover:underline"
+              >
+                See shipments
+              </Link>
             </CardContent>
           </Card>
         ))}

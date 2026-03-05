@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { apiClient } from '@/lib/api-client';
 import { ShipmentsGrid } from '@/modules/shipment/components/shipments-grid';
 
-const ACCOUNT_ID = 'f0e773e8-2918-41ff-a1ad-16afe52a4a6b';
 const PAGE_SIZE = 10;
 type ShipmentResponse =
   | Record<string, unknown>
@@ -40,7 +39,7 @@ const normalizeShipments = (
   return [payload];
 };
 
-function ShipmentPageContent() {
+function ShipmentPageContent({ accountId }: { accountId: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -172,8 +171,8 @@ function ShipmentPageContent() {
 
         const queryString = params.toString();
         const endpoint = queryString
-          ? `/accounts/${ACCOUNT_ID}/shipments?${queryString}`
-          : `/accounts/${ACCOUNT_ID}/shipments`;
+          ? `/accounts/${accountId}/shipments?${queryString}`
+          : `/accounts/${accountId}/shipments`;
         const response = await apiClient.get(endpoint);
 
         if (!isMounted) return;
@@ -208,6 +207,7 @@ function ShipmentPageContent() {
       isMounted = false;
     };
   }, [
+    accountId,
     normalizedExternalIdFilter,
     normalizedInvoiceCodeFilter,
     normalizedStatusFilter,
@@ -268,7 +268,11 @@ function ShipmentPageContent() {
   );
 }
 
-export default function ShipmentPage() {
+export default function ShipmentPage({
+  params,
+}: {
+  params: { accountId: string };
+}) {
   return (
     <Suspense
       fallback={
@@ -277,7 +281,7 @@ export default function ShipmentPage() {
         </Container>
       }
     >
-      <ShipmentPageContent />
+      <ShipmentPageContent accountId={params.accountId} />
     </Suspense>
   );
 }
