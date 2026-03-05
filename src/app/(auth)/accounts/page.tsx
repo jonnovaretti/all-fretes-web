@@ -130,9 +130,9 @@ function AccountsPageContent() {
                   variant="outline"
                   size="sm"
                   disabled={syncing[`${account.id}:sync/consolidated-status`]}
-                  onClick={() => handleSync(account.id, 'sync/consolidated-status', 'Consolidate status')}
+                  onClick={() => handleSync(account.id, 'sync/consolidated-status?forceAllAccounts=false', 'Consolidate status')}
                 >
-                  {syncing[`${account.id}:sync/consolidated-status`] ? 'Syncing...' : 'Consolidate status'}
+                  {syncing[`${account.id}:sync/consolidated-status?forceAllAccounts=false`] ? 'Syncing...' : 'Consolidate status'}
                 </Button>
               </div>
             </CardContent>
