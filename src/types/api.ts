@@ -5,6 +5,7 @@ export type LoginDto = components['schemas']['LoginDto'];
 export type UserResponseDto = components['schemas']['UserResponseDto'];
 export type AuthResponseDto = components['schemas']['AuthResponseDto'];
 export type AccountResponseDto = components['schemas']['AccountResponseDto'];
+export type AccountListResponseDto = components['schemas']['AccountListResponseDto'];
 export type ShipmentResponseDto = components['schemas']['ShipmentResponseDto'];
 export type SyncJobResponseDto = components['schemas']['SyncJobResponseDto'];
 export type HealthResponseDto = components['schemas']['HealthResponseDto'];

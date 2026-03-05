@@ -53,6 +53,9 @@ export function UserMenu() {
           <Link href="/profile">Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
+          <Link href="/accounts">Accounts</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/shipment">Shipment</Link>
         </DropdownMenuItem>
         {user.admin && (
