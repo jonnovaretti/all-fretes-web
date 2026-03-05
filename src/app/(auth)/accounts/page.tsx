@@ -10,7 +10,9 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { apiClient } from '@/lib/api-client';
+import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import type { AccountResponseDto } from '@/types/api';
 
@@ -18,6 +20,20 @@ function AccountsPageContent() {
   const [accounts, setAccounts] = useState<AccountResponseDto[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [syncing, setSyncing] = useState<Record<string, boolean>>({});
+
+  const handleSync = async (accountId: string, endpoint: string, label: string) => {
+    const key = `${accountId}:${endpoint}`;
+    try {
+      setSyncing(prev => ({ ...prev, [key]: true }));
+      await apiClient.post(`/accounts/${accountId}/${endpoint}`);
+      toast({ title: `${label} completed successfully.` });
+    } catch {
+      toast({ variant: 'destructive', title: `${label} failed. Please try again.` });
+    } finally {
+      setSyncing(prev => ({ ...prev, [key]: false }));
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -87,12 +103,38 @@ function AccountsPageContent() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">{account.id}</p>
-              <Link
-                href={`/accounts/${account.id}/shipments`}
-                className="mt-3 inline-block text-sm font-medium text-primary hover:underline"
-              >
-                See shipments
-              </Link>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <Link
+                  href={`/accounts/${account.id}/shipments`}
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  See shipments
+                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={syncing[`${account.id}:sync/shipment`]}
+                  onClick={() => handleSync(account.id, 'sync/shipment', 'Sync shipments')}
+                >
+                  {syncing[`${account.id}:sync/shipment`] ? 'Syncing...' : 'Sync shipments'}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={syncing[`${account.id}:sync/tracking`]}
+                  onClick={() => handleSync(account.id, 'sync/tracking', 'Sync tracking')}
+                >
+                  {syncing[`${account.id}:sync/tracking`] ? 'Syncing...' : 'Sync tracking'}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={syncing[`${account.id}:sync/consolidated-status`]}
+                  onClick={() => handleSync(account.id, 'sync/consolidated-status', 'Consolidate status')}
+                >
+                  {syncing[`${account.id}:sync/consolidated-status`] ? 'Syncing...' : 'Consolidate status'}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}
