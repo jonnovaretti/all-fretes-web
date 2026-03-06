@@ -191,7 +191,18 @@ export function ShipmentsGrid({
               >
                 {columns.map(column => (
                   <TableCell key={`${column}-${index}`}>
-                    {formatColumnValue(column, shipment[column])}
+                    {column === 'externalId' && shipment[column] ? (
+                      <a
+                        href={`https://gofretes.com.br/Rastreamento?query=${shipment[column]}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:opacity-70"
+                      >
+                        {formatColumnValue(column, shipment[column])}
+                      </a>
+                    ) : (
+                      formatColumnValue(column, shipment[column])
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
