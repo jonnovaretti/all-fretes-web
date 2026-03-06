@@ -49,6 +49,7 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
   const initialExternalId = searchParams.get('externalId') ?? '';
   const initialPage = Math.max(Number(searchParams.get('page')) || 1, 1);
 
+  const [accountName, setAccountName] = useState<string | null>(null);
   const [shipments, setShipments] = useState<Record<string, unknown>[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -93,6 +94,13 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
 
     return () => clearTimeout(timeout);
   }, [externalIdFilter]);
+
+  useEffect(() => {
+    apiClient
+      .get<{ name?: string }>(`/accounts/${accountId}`)
+      .then(res => setAccountName(res.data?.name ?? null))
+      .catch(() => setAccountName(null));
+  }, [accountId]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -216,7 +224,9 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
 
   return (
     <Container className="py-5">
-      <h1 className="text-center text-2xl font-bold">Pedidos e fretes</h1>
+      <h1 className="text-center text-2xl font-bold">
+        Pedidos e Fretes{accountName ? ` - ${accountName}` : ''}
+      </h1>
       <div className="mt-6 flex items-end gap-4 overflow-x-auto">
         <div className="min-w-60 flex-1 space-y-2">
           <p className="text-sm font-medium">#Pedido</p>
@@ -277,7 +287,7 @@ export default function ShipmentPage({
     <Suspense
       fallback={
         <Container className="py-5">
-          <h1 className="text-center text-2xl font-bold">Pedidos e fretes</h1>
+          <h1 className="text-center text-2xl font-bold">Pedidos e Fretes</h1>
         </Container>
       }
     >

@@ -100,7 +100,7 @@ const formatCurrencyBRL = (value: unknown) => {
 };
 
 const formatColumnValue = (column: string, value: unknown) => {
-  if (column === 'startedAt' || column === 'lastNotifiedAt') {
+  if (column === 'startedAt' || column === 'lastNotifiedAt' || column === 'deliveryEstimateDate') {
     return formatDateTime(value);
   }
 
