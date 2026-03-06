@@ -22,6 +22,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/accounts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get an account by id */
+        get: operations["AccountsController_findOne"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/accounts/{id}/shipments": {
         parameters: {
             query?: never;
@@ -170,16 +187,6 @@ export interface components {
             /** @example gofrete-user */
             username: string;
         };
-        CreateAccountDto: {
-            /** @example Main Account */
-            name: string;
-            /** @example http://localhost:3000/mock/login */
-            baseUrl?: string;
-            /** @example gofrete-user */
-            username: string;
-            /** @example secret */
-            password: string;
-        };
         ShipmentResponseDto: {
             /** @example 8c7d2c64-9b16-4f2f-9c7a-3b1f7c7b0b6a */
             id: string;
@@ -244,6 +251,16 @@ export interface components {
              * @example 2024-06-02T08:22:10.000Z
              */
             updatedAt: string;
+        };
+        CreateAccountDto: {
+            /** @example Main Account */
+            name: string;
+            /** @example http://localhost:3000/mock/login */
+            baseUrl?: string;
+            /** @example gofrete-user */
+            username: string;
+            /** @example secret */
+            password: string;
         };
         CreateUserDto: {
             /** @example Jane Doe */
@@ -340,6 +357,34 @@ export interface operations {
             };
         };
     };
+    AccountsController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountResponseDto"];
+                };
+            };
+            /** @description Account not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     ShipmentsController_findByAccountId: {
         parameters: {
             query?: {
@@ -350,6 +395,7 @@ export interface operations {
                 invoiceCode?: string;
                 status?: string;
                 carrierStatus?: string;
+                consolidatedStatus?: "delayed" | "finished" | "returning" | "in transit";
             };
             header?: never;
             path: {

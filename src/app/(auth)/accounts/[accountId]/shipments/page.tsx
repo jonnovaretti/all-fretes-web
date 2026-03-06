@@ -1,12 +1,26 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, use, useEffect, useMemo, useState } from 'react';
 import { AxiosError } from 'axios';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Container } from '@/components/ui/container';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { apiClient } from '@/lib/api-client';
+
+const CONSOLIDATED_STATUS_OPTIONS = [
+  { value: 'delayed', label: 'Atrasado' },
+  { value: 'finished', label: 'Finalizado' },
+  { value: 'returning', label: 'Em devolução' },
+  { value: 'in transit', label: 'Em trânsito' },
+] as const;
 import { ShipmentsGrid } from '@/modules/shipment/components/shipments-grid';
 
 const PAGE_SIZE = 10;
@@ -45,6 +59,7 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
   const searchParams = useSearchParams();
 
   const initialStatus = searchParams.get('status') ?? '';
+  const initialConsolidatedStatus = searchParams.get('consolidatedStatus') ?? '';
   const initialInvoiceCode = searchParams.get('invoiceCode') ?? '';
   const initialExternalId = searchParams.get('externalId') ?? '';
   const initialPage = Math.max(Number(searchParams.get('page')) || 1, 1);
@@ -56,6 +71,7 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
   const [hasNextPage, setHasNextPage] = useState(false);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [statusFilter, setStatusFilter] = useState(initialStatus);
+  const [consolidatedStatusFilter, setConsolidatedStatusFilter] = useState(initialConsolidatedStatus);
   const [invoiceCodeFilter, setInvoiceCodeFilter] =
     useState(initialInvoiceCode);
   const [externalIdFilter, setExternalIdFilter] = useState(initialExternalId);
@@ -111,6 +127,12 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
       params.delete('status');
     }
 
+    if (consolidatedStatusFilter) {
+      params.set('consolidatedStatus', consolidatedStatusFilter);
+    } else {
+      params.delete('consolidatedStatus');
+    }
+
     if (shouldApplyTextFilter(normalizedInvoiceCodeFilter)) {
       params.set('invoiceCode', normalizedInvoiceCodeFilter);
     } else {
@@ -141,6 +163,7 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
     normalizedExternalIdFilter,
     normalizedInvoiceCodeFilter,
     normalizedStatusFilter,
+    consolidatedStatusFilter,
     pathname,
     router,
     searchParams,
@@ -167,6 +190,9 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
 
         if (activeStatus) {
           params.set('status', activeStatus);
+        }
+        if (consolidatedStatusFilter) {
+          params.set('consolidatedStatus', consolidatedStatusFilter);
         }
         if (activeInvoiceCode) {
           params.set('invoiceCode', activeInvoiceCode);
@@ -219,6 +245,7 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
     normalizedExternalIdFilter,
     normalizedInvoiceCodeFilter,
     normalizedStatusFilter,
+    consolidatedStatusFilter,
     currentPage,
   ]);
 
@@ -261,6 +288,28 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
             }}
           />
         </div>
+        <div className="min-w-60 flex-1 space-y-2">
+          <p className="text-sm font-medium">Status Consolidado</p>
+          <Select
+            value={consolidatedStatusFilter || 'all'}
+            onValueChange={value => {
+              setConsolidatedStatusFilter(value === 'all' ? '' : value);
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Todos" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              {CONSOLIDATED_STATUS_OPTIONS.map(option => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <Card className="mt-2">
@@ -281,8 +330,10 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
 export default function ShipmentPage({
   params,
 }: {
-  params: { accountId: string };
+  params: Promise<{ accountId: string }>;
 }) {
+  const resolvedParams = use(params);
+
   return (
     <Suspense
       fallback={
@@ -291,7 +342,7 @@ export default function ShipmentPage({
         </Container>
       }
     >
-      <ShipmentPageContent accountId={params.accountId} />
+      <ShipmentPageContent accountId={resolvedParams.accountId} />
     </Suspense>
   );
 }
