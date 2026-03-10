@@ -10,6 +10,8 @@ export type ShipmentResponseDto = components['schemas']['ShipmentResponseDto'];
 export type SyncJobResponseDto = components['schemas']['SyncJobResponseDto'];
 export type HealthResponseDto = components['schemas']['HealthResponseDto'];
 
+export type UpdateCheckedBody = components['schemas']['UpdateCheckedDto'];
+
 export type AuthLoginRequest =
   operations['AuthController_login']['requestBody']['content']['application/json'];
 export type AuthLoginResponse =

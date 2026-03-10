@@ -56,6 +56,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/accounts/{id}/shipments/{shipmentId}/checked": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update checked status of a shipment */
+        patch: operations["ShipmentsController_updateChecked"];
+        trace?: never;
+    };
     "/auth/register": {
         parameters: {
             query?: never;
@@ -220,6 +237,8 @@ export interface components {
             deliveryEstimateDate?: Record<string, never>;
             /** @example delayed */
             consolidatedStatus?: Record<string, never>;
+            /** @example false */
+            checked: boolean;
             /**
              * Format: date-time
              * @example 2024-06-01T12:34:56.000Z
@@ -261,6 +280,10 @@ export interface components {
             username: string;
             /** @example secret */
             password: string;
+        };
+        UpdateCheckedDto: {
+            /** @example true */
+            checked: boolean;
         };
         CreateUserDto: {
             /** @example Jane Doe */
@@ -412,6 +435,29 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ShipmentResponseDto"][];
                 };
+            };
+        };
+    };
+    ShipmentsController_updateChecked: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shipmentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCheckedDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
