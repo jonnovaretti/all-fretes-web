@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Container } from '@/components/ui/container';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -62,6 +63,7 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
   const initialConsolidatedStatus = searchParams.get('consolidatedStatus') ?? '';
   const initialInvoiceCode = searchParams.get('invoiceCode') ?? '';
   const initialExternalId = searchParams.get('externalId') ?? '';
+  const initialChecked = searchParams.get('checked') === 'true';
   const initialPage = Math.max(Number(searchParams.get('page')) || 1, 1);
 
   const [accountName, setAccountName] = useState<string | null>(null);
@@ -75,6 +77,7 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
   const [invoiceCodeFilter, setInvoiceCodeFilter] =
     useState(initialInvoiceCode);
   const [externalIdFilter, setExternalIdFilter] = useState(initialExternalId);
+  const [checkedFilter, setCheckedFilter] = useState(initialChecked);
   const [debouncedInvoiceCode, setDebouncedInvoiceCode] =
     useState(initialInvoiceCode);
   const [debouncedExternalId, setDebouncedExternalId] =
@@ -145,6 +148,12 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
       params.delete('externalId');
     }
 
+    if (checkedFilter) {
+      params.set('checked', 'true');
+    } else {
+      params.delete('checked');
+    }
+
     if (currentPage > 1) {
       params.set('page', String(currentPage));
     } else {
@@ -164,6 +173,7 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
     normalizedInvoiceCodeFilter,
     normalizedStatusFilter,
     consolidatedStatusFilter,
+    checkedFilter,
     pathname,
     router,
     searchParams,
@@ -199,6 +209,9 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
         }
         if (activeExternalId) {
           params.set('externalId', activeExternalId);
+        }
+        if (checkedFilter) {
+          params.set('checked', 'true');
         }
         params.set('page', String(currentPage));
         params.set('totalItems', String(PAGE_SIZE));
@@ -246,6 +259,7 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
     normalizedInvoiceCodeFilter,
     normalizedStatusFilter,
     consolidatedStatusFilter,
+    checkedFilter,
     currentPage,
   ]);
 
@@ -309,6 +323,23 @@ function ShipmentPageContent({ accountId }: { accountId: string }) {
               ))}
             </SelectContent>
           </Select>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="checked-filter" className="cursor-pointer text-sm font-medium">
+            Checked
+          </Label>
+          <div className="flex h-10 items-center justify-center">
+            <input
+              id="checked-filter"
+              type="checkbox"
+              checked={checkedFilter}
+              onChange={event => {
+                setCheckedFilter(event.target.checked);
+                setCurrentPage(1);
+              }}
+              className="h-4 w-4 cursor-pointer"
+            />
+          </div>
         </div>
       </div>
 

@@ -419,6 +419,7 @@ export interface operations {
                 status?: string;
                 carrierStatus?: string;
                 consolidatedStatus?: "delayed" | "finished" | "returning" | "in transit";
+                checked?: boolean;
             };
             header?: never;
             path: {
