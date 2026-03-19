@@ -42,7 +42,7 @@ const HIDDEN_COLUMNS = new Set([
 
 const COLUMN_LABELS: Record<string, string> = {
   externalId: '#Pedido',
-  status: 'Status',
+  status: 'GoFrete Status',
   invoiceCode: 'NFe',
   destination: 'Destino',
   value: 'Valor',
@@ -51,7 +51,7 @@ const COLUMN_LABELS: Record<string, string> = {
   carrier: 'Transportadora',
   carrierStatus: 'Transportadora status',
   statusDescription: 'Detalhes status',
-  deliveryEstimateDate: 'Data Estimada de Entrega',
+  deliveryEstimateDate: 'Data Estimada',
   lastNotifiedAt: 'Ultima Notificacao',
 };
 
@@ -61,12 +61,9 @@ const COLUMN_ORDER = [
   'status',
   'destination',
   'value',
-  'startedAt',
   'deliveryEstimateDate',
-  'lastNotifiedAt',
   'carrier',
   'carrierStatus',
-  'statusDescription',
 ] as const;
 
 const formatDateTime = (value: unknown) => {
@@ -105,7 +102,11 @@ const formatCurrencyBRL = (value: unknown) => {
 };
 
 const formatColumnValue = (column: string, value: unknown) => {
-  if (column === 'startedAt' || column === 'lastNotifiedAt' || column === 'deliveryEstimateDate') {
+  if (
+    column === 'startedAt' ||
+    column === 'lastNotifiedAt' ||
+    column === 'deliveryEstimateDate'
+  ) {
     return formatDateTime(value);
   }
 
@@ -157,8 +158,13 @@ export function ShipmentsGrid({
   onPageChange,
   isLoading = false,
 }: ShipmentsGridProps) {
-  const [checkedOverrides, setCheckedOverrides] = useState<Record<string, boolean>>({});
-  const [pendingCheck, setPendingCheck] = useState<{ shipmentId: string; checked: boolean } | null>(null);
+  const [checkedOverrides, setCheckedOverrides] = useState<
+    Record<string, boolean>
+  >({});
+  const [pendingCheck, setPendingCheck] = useState<{
+    shipmentId: string;
+    checked: boolean;
+  } | null>(null);
   const [isConfirming, setIsConfirming] = useState(false);
 
   const availableColumns = new Set(
@@ -243,7 +249,9 @@ export function ShipmentsGrid({
 
                 return (
                   <TableRow
-                    className={getRowStatusClassName(shipment.consolidatedStatus)}
+                    className={getRowStatusClassName(
+                      shipment.consolidatedStatus,
+                    )}
                     key={shipmentId}
                   >
                     {columns.map(column => (
@@ -266,7 +274,9 @@ export function ShipmentsGrid({
                       <input
                         type="checkbox"
                         checked={isChecked}
-                        onChange={() => handleCheckboxClick(shipmentId, isChecked)}
+                        onChange={() =>
+                          handleCheckboxClick(shipmentId, isChecked)
+                        }
                         className="h-4 w-4 cursor-pointer accent-primary"
                       />
                     </TableCell>
