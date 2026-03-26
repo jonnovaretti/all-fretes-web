@@ -39,6 +39,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/accounts/{id}/token/bling/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request bling token with the code */
+        post: operations["AccountsController_requestBlingToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/accounts/{id}/shipments": {
         parameters: {
             query?: never;
@@ -281,6 +298,10 @@ export interface components {
             /** @example secret */
             password: string;
         };
+        BlingCodeDto: {
+            /** @example Bling code */
+            code: string;
+        };
         UpdateCheckedDto: {
             /** @example true */
             checked: boolean;
@@ -401,6 +422,29 @@ export interface operations {
             };
             /** @description Account not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AccountsController_requestBlingToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BlingCodeDto"];
+            };
+        };
+        responses: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
